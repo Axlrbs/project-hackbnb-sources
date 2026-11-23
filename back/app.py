@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
+from werkzeug.serving import WSGIRequestHandler
 from database.init import db
 from database.seed import seed_database
 
@@ -39,8 +40,11 @@ def welcome():
 
 
 if __name__ == '__main__':
+   # Hide server and Python versions in the Server header
+   WSGIRequestHandler.server_version = "hackbnb"
+   WSGIRequestHandler.sys_version = ""
    app.run(
-      debug=True,
+      debug=False,
       host="0.0.0.0",
       port=9001,
    )
