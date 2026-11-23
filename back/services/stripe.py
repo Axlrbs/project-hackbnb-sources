@@ -1,6 +1,8 @@
 import os
+import re
 import stripe
-import requests
+
+CS_REGEX = re.compile(r"^cs_(test|live)_[A-Za-z0-9]+$")
 
 def create_checkout(reference, name, unit_price, quantity, confirmation_secret):
     """
@@ -34,8 +36,8 @@ def is_checkout_paid(checkout_session_id):
     return session.payment_status == "paid"
 
 def get_checkout_lines(checkout_session_id):
-    url = f"https://api.stripe.com/v1/checkout/sessions/{checkout_session_id}/line_items"
+    if not CS_REGEX.match(checkout_session_id or ""):
+        raise ValueError("Invalid checkout session ID")
 
-    session = requests.Session()
-    session.auth = (os.getenv('STRIPE_API_KEY'), "")
-    return session.get(url).json()["data"]
+    stripe.api_key = os.getenv('STRIPE_API_KEY')
+    return stripe.checkout.Session.list_line_items(checkout_session_id).to_dict()["data"]
