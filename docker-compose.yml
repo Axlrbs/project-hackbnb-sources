@@ -5,9 +5,7 @@ services:
     command: bash -c "pip3 install -r requirements.txt && python3 app.py"
     volumes:
       - ./back:/app
-    environment:
-      APP_ORIGIN_HOST: http://localhost:9000
-      STRIPE_API_KEY: ***REMOVED***
+    env_file: .env
 
   front:
     image: node:22
